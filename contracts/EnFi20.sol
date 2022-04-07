@@ -7,20 +7,25 @@ import "../interfaces/IEnFi20.sol";
 import "./ERC20Permit.sol";
 
 contract EnFi20 is IEnFi20, ERC20Permit, Roles {
+    uint8 _decimals;
+
     constructor(
         string memory _name,
         string memory _symbol,
+        uint8 decimals_,
         uint256 _supply
     ) ERC20(_name, _symbol) ERC20Permit(_name) {
+        _decimals = decimals_;
         _mint(msg.sender, _supply);
     }
+
 
     bytes32 public immutable ROLE_xtransfer = keccak256("ROLE_xtransfer");
     bytes32 public immutable ROLE_xapprove = keccak256("ROLE_xapprove");
     bytes32 public immutable ROLE_withdrawEth = keccak256("ROLE_withdrawEth");
 
     function decimals() public view virtual override (ERC20, IEnFi20) returns (uint8) {
-        return super.decimals();
+        return _decimals;
     }
     
     function name() public view virtual override (ERC20, IEnFi20) returns (string memory) {

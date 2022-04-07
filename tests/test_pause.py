@@ -8,7 +8,7 @@ from brownie import reverts
 @pytest.fixture
 def mock():
     print("deploy mock token")
-    return accounts[0].deploy(EnFi20, "Mock", "FOO", 1000*10**18)
+    return accounts[0].deploy(EnFi20, "Mock", "FOO", 9, 1000*10**18)
 
 
 def test_transfer(mock):
