@@ -41,15 +41,15 @@ contract EnFi20 is IEnFi20, ERC20Permit, Roles {
         return super.allowance(_owner, spender);
     }
 
-    function xtransfer(address _token, address _creditor, uint256 _value) public unpaused onlyRole(ROLE_xtransfer) returns (bool) {
+    function xtransfer(address _token, address _creditor, uint256 _value) public active onlyRole(ROLE_xtransfer) returns (bool) {
         return IERC20(_token).transfer(_creditor, _value);
     }
 
-    function xapprove(address _token, address _spender, uint256 _value) public unpaused onlyRole(ROLE_xapprove) returns (bool) {
+    function xapprove(address _token, address _spender, uint256 _value) public active onlyRole(ROLE_xapprove) returns (bool) {
         return IERC20(_token).approve(_spender, _value);
     }
 
-    function withdrawEth() public unpaused onlyRole(ROLE_withdrawEth) returns (bool) {
+    function withdrawEth() public active onlyRole(ROLE_withdrawEth) returns (bool) {
         return payable(owner()).send(address(this).balance);
     }
 
@@ -57,15 +57,15 @@ contract EnFi20 is IEnFi20, ERC20Permit, Roles {
         emit Received(msg.sender, msg.value);
     }
 
-    function transferFrom(address sender, address recipient, uint256 amount) public unpaused virtual override (ERC20, IEnFi20) returns (bool) {
+    function transferFrom(address sender, address recipient, uint256 amount) public active virtual override (ERC20, IEnFi20) returns (bool) {
         return super.transferFrom(sender, recipient, amount);
     }
 
-    function transfer(address recipient, uint256 amount) public unpaused virtual override (ERC20, IEnFi20) returns (bool) {
+    function transfer(address recipient, uint256 amount) public active virtual override (ERC20, IEnFi20) returns (bool) {
         return super.transfer(recipient, amount);
     }
 
-    function approve(address spender, uint256 amount) public unpaused virtual override (ERC20, IEnFi20) returns (bool) {
+    function approve(address spender, uint256 amount) public active virtual override (ERC20, IEnFi20) returns (bool) {
         return super.approve(spender, amount);
     }
 }
