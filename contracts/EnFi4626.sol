@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "../interfaces/IERC4626.sol";
 import "./EnFi20.sol";
 
-contract ERC4626 is EnFi20, IERC4626 {
+contract EnFi4626 is EnFi20, IERC4626 {
 
     uint8 _decimals;
 
@@ -19,8 +19,8 @@ contract ERC4626 is EnFi20, IERC4626 {
     /// @param _name The name for the vault token.
     /// @param _symbol The symbol for the vault token.
 
-    constructor(ERC20 _asset, string memory _name, string memory _symbol) EnFi20(_name, _symbol, 0) {
-        asset_ = _asset;
+    constructor(address _asset, string memory _name, string memory _symbol) EnFi20(_name, _symbol, 0) {
+        asset_ = ERC20(_asset);
         baseUnit = 10**asset_.decimals();
     }
 

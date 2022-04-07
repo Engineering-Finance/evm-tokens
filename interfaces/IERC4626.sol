@@ -5,7 +5,6 @@
 pragma solidity ^0.8.0;
 import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/token/ERC20/extensions/draft-IERC20Permit.sol";
 
-
 interface IERC4626 is IERC20Permit {
     function asset() external view returns (address assetTokenAddress);
     function totalAssets() external view returns (uint256 totalManagedAssets);

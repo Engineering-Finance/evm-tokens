@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./ERC4626.sol";
+import "./EnFi4626.sol";
 
-contract MockERC4626 is ERC4626 {
+contract MockERC4626 is EnFi4626 {
 
-    constructor(ERC20 _asset, string memory _name, string memory _symbol) ERC4626(_asset, _name, _symbol)
+    constructor(address _asset, string memory _name, string memory _symbol) EnFi4626(_asset, _name, _symbol)
     {
 
     }
