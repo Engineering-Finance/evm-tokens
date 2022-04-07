@@ -60,11 +60,11 @@ interface IRole {
      * @dev function paused(account)
      * @dev returns true if the token is paused for this account, false otherwise.
      */
-    function paused(address account) external;
+    function paused(address account) external view returns (bool);
 
     /**
      * @dev function paused()
      * @dev returns true if the token is paused for the message sender, false otherwise.
      */
-    function paused() external view returns (bool is_paused);
+    function paused() external view returns (bool);
 }
