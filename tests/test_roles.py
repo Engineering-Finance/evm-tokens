@@ -7,7 +7,7 @@ from brownie import *
 @pytest.fixture
 def mock():
     print("deploy mock token")
-    return accounts[0].deploy(EnFi20, "Mock", "FOO", 1000*18**18)
+    return accounts[0].deploy(EnFi20, "Mock", "FOO", 9, 1000*18**18)
 
 
 def test_deposit(mock):

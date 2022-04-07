@@ -6,7 +6,6 @@ import "./EnFi20.sol";
 
 contract EnFi4626 is EnFi20, IERC4626 {
 
-    uint8 _decimals;
 
     /// @notice The underlying token the vault accepts.
     ERC20 public immutable asset_;
@@ -19,17 +18,13 @@ contract EnFi4626 is EnFi20, IERC4626 {
     /// @param _name The name for the vault token.
     /// @param _symbol The symbol for the vault token.
 
-    constructor(address _asset, string memory _name, string memory _symbol) EnFi20(_name, _symbol, 0) {
+    constructor(address _asset, string memory _name, string memory _symbol) EnFi20(_name, _symbol, ERC20(_asset).decimals(), 0) {
         asset_ = ERC20(_asset);
         baseUnit = 10**asset_.decimals();
     }
 
     function asset() external view returns (address assetTokenAddress){
         return address(asset_);
-    }
-
-    function decimals() public view override returns (uint8) {
-        return asset_.decimals();
     }
 
     function totalAssets() public view returns (uint256 totalManagedAssets) {
