@@ -12,46 +12,46 @@ abstract contract Roles is Ownable, IRole {
     bytes32 public immutable ROLE_unpause = keccak256("ROLE_unpause");
     
     bool public is_paused = false;
-    mapping(address => bool) private blacklist;
+    mapping(address => bool) internal blacklist;
 
-    function hasRole(address account, bytes32 role)  public view returns (bool) {
+    function hasRole(address account, bytes32 role) public virtual view returns (bool) {
         return roles[account][role] || owner() == _msgSender();
     }
 
-    function hasRole(bytes32 role) public view returns (bool) {
+    function hasRole(bytes32 role) public virtual view returns (bool) {
         return hasRole(_msgSender(), role);
     }
 
-    function addRole(address account, bytes32 _role) public onlyRole(ROLE_addRole) {
+    function addRole(address account, bytes32 _role) public virtual onlyRole(ROLE_addRole) {
         roles[account][_role] = true;
     }
 
-    function removeRole(address account, bytes32 _role) public onlyRole(ROLE_removeRole) {
+    function removeRole(address account, bytes32 _role) public virtual onlyRole(ROLE_removeRole) {
         roles[account][_role] = false;
     }
 
-    function pause() public onlyRole(ROLE_pause) {
+    function pause() public virtual onlyRole(ROLE_pause) {
         is_paused = true;
     }
 
-    function pause(address account) public onlyRole(ROLE_pause) {
+    function pause(address account) public virtual onlyRole(ROLE_pause) {
         blacklist[account] = true;
     }
 
-    function unpause() public onlyRole(ROLE_unpause) {
+    function unpause() public virtual onlyRole(ROLE_unpause) {
         is_paused = false;
     }
 
-    function unpause(address account) public onlyRole(ROLE_unpause) {
+    function unpause(address account) public virtual onlyRole(ROLE_unpause) {
         blacklist[account] = false;
     }
 
-    function paused(address account) public view returns (bool) {
+    function paused(address account) public virtual view returns (bool) {
         if(owner() == account) return false;
         return is_paused || blacklist[account];
     }
 
-    function paused() public view returns (bool) {
+    function paused() public virtual view returns (bool) {
         return paused(_msgSender());
     }
 

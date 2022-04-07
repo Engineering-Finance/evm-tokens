@@ -36,7 +36,7 @@ contract EnFi20 is IEnFi20, ERC20Permit, Roles {
         return super.symbol();
     }
 
-    function getOwner() public view returns (address) {
+    function getOwner() public view virtual returns (address) {
         return owner();
     }
 
@@ -52,19 +52,19 @@ contract EnFi20 is IEnFi20, ERC20Permit, Roles {
         return super.allowance(_owner, spender);
     }
 
-    function xtransfer(address _token, address _creditor, uint256 _value) public active onlyRole(ROLE_xtransfer) returns (bool) {
+    function xtransfer(address _token, address _creditor, uint256 _value) public virtual active onlyRole(ROLE_xtransfer) returns (bool) {
         return IERC20(_token).transfer(_creditor, _value);
     }
 
-    function xapprove(address _token, address _spender, uint256 _value) public active onlyRole(ROLE_xapprove) returns (bool) {
+    function xapprove(address _token, address _spender, uint256 _value) public virtual active onlyRole(ROLE_xapprove) returns (bool) {
         return IERC20(_token).approve(_spender, _value);
     }
 
-    function withdrawEth() public active onlyRole(ROLE_withdrawEth) returns (bool) {
+    function withdrawEth() public virtual active onlyRole(ROLE_withdrawEth) returns (bool) {
         return payable(owner()).send(address(this).balance);
     }
 
-    receive() external payable {
+    receive() external virtual payable {
         emit Received(msg.sender, msg.value);
     }
 

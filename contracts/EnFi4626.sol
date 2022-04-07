@@ -23,34 +23,34 @@ contract EnFi4626 is EnFi20, IERC4626 {
         baseUnit = 10**asset_.decimals();
     }
 
-    function asset() external view returns (address assetTokenAddress){
+    function asset() public virtual view returns (address assetTokenAddress){
         return address(asset_);
     }
 
-    function totalAssets() public view returns (uint256 totalManagedAssets) {
+    function totalAssets() public virtual view returns (uint256 totalManagedAssets) {
         return usedFunds + asset_.balanceOf(address(this));
     }
 
-    function convertToShares(uint256 assets) public view returns (uint256 shares) {
+    function convertToShares(uint256 assets) public virtual view returns (uint256 shares) {
         shares = (assets * baseUnit) / assetsPerShare();
     }
 
-    function convertToAssets(uint256 shares) public view returns (uint256 assets) {
+    function convertToAssets(uint256 shares) public virtual view returns (uint256 assets) {
         if (totalSupply() == 0) {
             return 0;
         }
         assets = (shares * assetsPerShare()) / baseUnit;
     }
 
-    function maxDeposit(address receiver) external view returns (uint256 maxAssets){
+    function maxDeposit(address receiver) public virtual view returns (uint256 maxAssets){
         maxAssets = type(uint256).max;
     }
     
-    function previewDeposit(uint256 assets) external view returns (uint256 shares) {
+    function previewDeposit(uint256 assets) public virtual view returns (uint256 shares) {
         return convertToShares(assets);
     }
 
-    function deposit(uint256 assets, address receiver) external returns (uint256 shares){
+    function deposit(uint256 assets, address receiver) public virtual returns (uint256 shares){
         uint256 totalAssets_ = totalAssets();
         uint256 exchangeRate_ = assetsPerShare();
         asset_.transferFrom(_msgSender(), address(this), assets);
@@ -61,15 +61,15 @@ contract EnFi4626 is EnFi20, IERC4626 {
         emit Deposit(_msgSender(), receiver, assets, shares);
     }
 
-    function maxMint(address receiver) external view returns (uint256 maxShares) {
+    function maxMint(address receiver) public virtual view returns (uint256 maxShares) {
         maxShares = type(uint256).max;
     }
 
-    function previewMint(uint256 shares) public view returns (uint256 assets){
+    function previewMint(uint256 shares) public virtual view returns (uint256 assets){
         assets = (shares * assetsPerShare()) / baseUnit;
     }
 
-    function mint(uint256 shares, address receiver) external returns (uint256 assets){
+    function mint(uint256 shares, address receiver) public virtual returns (uint256 assets){
         uint256 exchangeRate_ = assetsPerShare();
         uint256 totalAssets_ = totalAssets();
         asset_.transferFrom(_msgSender(), address(this), previewMint(shares));
@@ -80,20 +80,20 @@ contract EnFi4626 is EnFi20, IERC4626 {
         emit Deposit(_msgSender(), receiver, assets, shares_);
     }
 
-    function maxWithdraw(address owner) external view returns (uint256 maxAssets){
+    function maxWithdraw(address owner) public virtual view returns (uint256 maxAssets){
         //maxAssets = type(uint256).max;
 
         return assetsOf(owner);
     }
     
-    function previewWithdraw(uint256 assets) public view returns (uint256 shares) {
+    function previewWithdraw(uint256 assets) public virtual view returns (uint256 shares) {
         if (totalSupply() == 0 ) {
             return 0;
         }
         return (assets * baseUnit ) / assetsPerShare();
     }
 
-    function withdraw(uint256 assets, address receiver, address owner) external returns (uint256 shares){
+    function withdraw(uint256 assets, address receiver, address owner) public virtual returns (uint256 shares){
         shares = previewWithdraw(assets);
         _spendAllowance(owner, _msgSender(), shares);
         // Determine the equivalent assets of shares and burn them.
@@ -103,16 +103,16 @@ contract EnFi4626 is EnFi20, IERC4626 {
         asset_.transfer(receiver, assets);
     }
 
-    function maxRedeem(address owner) external view returns (uint256 maxShares){
+    function maxRedeem(address owner) public virtual view returns (uint256 maxShares){
         //maxShares = type(uint256).max;
 
         return balanceOf(owner);
     }
 
-    function previewRedeem(uint256 shares) public view returns (uint256 assets) {
+    function previewRedeem(uint256 shares) public virtual view returns (uint256 assets) {
         return convertToAssets(shares);
     }
-    function redeem(uint256 shares, address receiver, address owner) external returns (uint256 assets){
+    function redeem(uint256 shares, address receiver, address owner) public virtual returns (uint256 assets){
         require((assets = previewRedeem(shares)) != 0, "ZERO_ASSETS");
         _spendAllowance(owner, _msgSender(), shares);
         _burn(owner, shares);
@@ -125,11 +125,11 @@ contract EnFi4626 is EnFi20, IERC4626 {
                         VAULT ACCOUNTING LOGIC
     //////////////////////////////////////////////////////////////*/
 
-    function assetsOf(address depositor) public view returns (uint256 assets) {
+    function assetsOf(address depositor) public virtual view returns (uint256 assets) {
         assets = (balanceOf(depositor) * assetsPerShare()) / baseUnit;
     }
 
-    function assetsPerShare() public view returns (uint256 assetsPerUnitShare) {
+    function assetsPerShare() public virtual view returns (uint256 assetsPerUnitShare) {
         uint256 shareSupply = totalSupply();
 
         if (shareSupply == 0) return baseUnit;
@@ -138,7 +138,7 @@ contract EnFi4626 is EnFi20, IERC4626 {
         assetsPerUnitShare = (totalAssets() * baseUnit) / shareSupply;
     }
 
-    function depositFrom(uint256 assets, address receiver) external virtual returns (uint256 shares) {
+    function depositFrom(uint256 assets, address receiver) public virtual returns (uint256 shares) {
         uint256 exchangeRate_ = assetsPerShare();
         uint256 totalAssets_ = totalAssets();
         // Transfer in underlying tokens from the user.
