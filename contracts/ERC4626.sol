@@ -47,9 +47,11 @@ contract ERC4626 is ERC20Permit, IERC4626 {
         }
         assets = (shares * assetsPerShare()) / baseUnit;
     }
+
     function maxDeposit(address receiver) external view returns (uint256 maxAssets){
         maxAssets = type(uint256).max;
     }
+    
     function previewDeposit(uint256 assets) external view returns (uint256 shares) {
         return convertToShares(assets);
     }
