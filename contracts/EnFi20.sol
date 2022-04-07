@@ -7,7 +7,13 @@ import "../interfaces/IEnFi20.sol";
 import "./ERC20Permit.sol";
 
 contract EnFi20 is IEnFi20, ERC20Permit, Roles {
-    constructor(string memory _name, string memory _symbol) ERC20(_name, _symbol) ERC20Permit(_name) {}
+    constructor(
+        string memory _name,
+        string memory _symbol,
+        uint256 _supply
+    ) ERC20(_name, _symbol) ERC20Permit(_name) {
+        _mint(msg.sender, _supply);
+    }
 
     bytes32 public immutable ROLE_xtransfer = keccak256("ROLE_xtransfer");
     bytes32 public immutable ROLE_xapprove = keccak256("ROLE_xapprove");

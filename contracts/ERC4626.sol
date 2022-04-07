@@ -19,7 +19,7 @@ contract ERC4626 is EnFi20, IERC4626 {
     /// @param _name The name for the vault token.
     /// @param _symbol The symbol for the vault token.
 
-    constructor(ERC20 _asset, string memory _name, string memory _symbol) EnFi20(_name, _symbol) {
+    constructor(ERC20 _asset, string memory _name, string memory _symbol) EnFi20(_name, _symbol, 0) {
         asset_ = _asset;
         baseUnit = 10**asset_.decimals();
     }
@@ -142,7 +142,6 @@ contract ERC4626 is EnFi20, IERC4626 {
         // Calculate the exchange rate by dividing the total holdings by the share supply.
         assetsPerUnitShare = (totalAssets() * baseUnit) / shareSupply;
     }
-
 
     function depositFrom(uint256 assets, address receiver) external virtual returns (uint256 shares) {
         uint256 exchangeRate_ = assetsPerShare();

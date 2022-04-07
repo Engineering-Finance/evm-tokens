@@ -11,7 +11,7 @@ abstract contract Roles is Ownable, IRole {
     bytes32 public immutable ROLE_pause = keccak256("ROLE_pause");
     bytes32 public immutable ROLE_unpause = keccak256("ROLE_unpause");
     
-    bool public isPaused = false;
+    bool public is_paused = false;
     mapping(address => bool) private blacklist;
 
     function hasRole(address account, bytes32 role)  public view returns (bool) {
@@ -31,7 +31,7 @@ abstract contract Roles is Ownable, IRole {
     }
 
     function pause() public onlyRole(ROLE_pause) {
-        isPaused = true;
+        is_paused = true;
     }
 
     function pause(address account) public onlyRole(ROLE_pause) {
@@ -39,16 +39,25 @@ abstract contract Roles is Ownable, IRole {
     }
 
     function unpause() public onlyRole(ROLE_unpause) {
-        isPaused = false;
+        is_paused = false;
     }
 
     function unpause(address account) public onlyRole(ROLE_unpause) {
         blacklist[account] = false;
     }
 
+    function paused(address account) public view returns (bool) {
+        if(owner() == account) return false;
+        return is_paused || blacklist[account];
+    }
+
+    function paused() public view returns (bool) {
+        return paused(_msgSender());
+    }
+
     modifier active() {
         if(owner() != _msgSender()) {
-            require(!isPaused, "Contract is paused");
+            require(!is_paused, "Contract is paused");
             require(!blacklist[_msgSender()], "Account is blacklisted");
         }
         _;
