@@ -4,11 +4,10 @@
 pragma solidity ^0.8.0;
 import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/token/ERC20/extensions/draft-IERC20Permit.sol";
 import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/token/ERC20/ERC20.sol";
-//import "./ERC20.sol";
 import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/utils/cryptography/draft-EIP712.sol";
 import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/utils/cryptography/SignatureChecker.sol";
 import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/utils/Counters.sol";
-import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/access/Ownable.sol";
+import "./Roles.sol";
 
 /**
  * @dev Implementation of the ERC20 Permit extension allowing approvals to be made via signatures, as defined in
@@ -20,7 +19,7 @@ import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/access/Ownable.sol";
  *
  * _Available since v3.4._
  */
-abstract contract ERC20Permit is Ownable, ERC20, IERC20Permit, EIP712 {
+abstract contract ERC20Permit is ERC20, IERC20Permit, EIP712 {
     using Counters for Counters.Counter;
 
     mapping(address => Counters.Counter) private _nonces;
@@ -81,7 +80,7 @@ abstract contract ERC20Permit is Ownable, ERC20, IERC20Permit, EIP712 {
      * @dev See {IERC20Permit-DOMAIN_SEPARATOR}.
      */
     // solhint-disable-next-line func-name-mixedcase
-    function DOMAIN_SEPARATOR() external view override returns (bytes32) {
+    function DOMAIN_SEPARATOR() external view virtual override returns (bytes32) {
         return _domainSeparatorV4();
     }
 
