@@ -16,7 +16,7 @@ contract EnFi20 is IEnFi20, ERC20Permit, Roles {
         uint256 _supply
     ) ERC20(_name, _symbol) ERC20Permit(_name) {
         _decimals = decimals_;
-        _mint(msg.sender, _supply);
+        _mint(msg.sender, _supply * 10**_decimals);
     }
 
 
