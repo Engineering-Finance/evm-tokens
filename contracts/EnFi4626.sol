@@ -50,11 +50,15 @@ contract EnFi4626 is EnFi20, IERC4626 {
         return convertToShares(assets);
     }
 
+    function _safeTransferFrom(ERC20 token_, address from_, address to_, uint256 amount_) private returns (uint256 result) {
+        uint256 initialBalance = token_.balanceOf(to_);
+        token_.transferFrom(from_, to_, amount_);
+        result = token_.balanceOf(to_) - initialBalance;
+    }
+
     function deposit(uint256 assets, address receiver) public virtual returns (uint256 shares){
-        uint256 totalAssets_ = totalAssets();
         uint256 exchangeRate_ = assetsPerShare();
-        asset_.transferFrom(_msgSender(), address(this), assets);
-        uint256 receivedAssets = totalAssets() - totalAssets_;
+        uint256 receivedAssets = _safeTransferFrom(asset_, _msgSender(), address(this), assets);
         shares = (receivedAssets * baseUnit) / exchangeRate_;
         require((shares!=0), "ZERO_SHARES");
         _mint(receiver, shares);
@@ -71,9 +75,7 @@ contract EnFi4626 is EnFi20, IERC4626 {
 
     function mint(uint256 shares, address receiver) public virtual returns (uint256 assets){
         uint256 exchangeRate_ = assetsPerShare();
-        uint256 totalAssets_ = totalAssets();
-        asset_.transferFrom(_msgSender(), address(this), previewMint(shares));
-        assets = totalAssets() - totalAssets_;
+        assets = _safeTransferFrom(asset_, _msgSender(), address(this), previewMint(shares));
         uint256 shares_ = (assets * baseUnit) / exchangeRate_;
         require((shares_!=0), "ZERO_SHARES");
         _mint(receiver, shares_);
@@ -140,10 +142,8 @@ contract EnFi4626 is EnFi20, IERC4626 {
 
     function depositFrom(uint256 assets, address receiver) public virtual returns (uint256 shares) {
         uint256 exchangeRate_ = assetsPerShare();
-        uint256 totalAssets_ = totalAssets();
         // Transfer in underlying tokens from the user.
-        asset_.transferFrom(tx.origin, address(this), assets);
-        uint256 assets_ = totalAssets() - totalAssets_;
+        uint256 assets_ = _safeTransferFrom(asset_, tx.origin, address(this), assets);
         shares = (assets_ * baseUnit) / exchangeRate_;
         require((shares!=0), "ZERO_SHARES");
         _mint(receiver, shares);
