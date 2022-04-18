@@ -6,7 +6,6 @@ import "./EnFi20.sol";
 
 contract EnFi4626 is EnFi20, IERC4626 {
 
-
     /// @notice The underlying token the vault accepts.
     ERC20 public immutable asset_;
 

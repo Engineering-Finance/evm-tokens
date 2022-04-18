@@ -3,10 +3,10 @@
 
 pragma solidity ^0.8.0;
 import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/token/ERC20/extensions/draft-IERC20Permit.sol";
-import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/token/ERC20/ERC20.sol";
-import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/utils/cryptography/draft-EIP712.sol";
 import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/utils/cryptography/SignatureChecker.sol";
 import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/utils/Counters.sol";
+import "./ERC20.sol";
+import "./EIP712.sol";
 import "./Roles.sol";
 
 /**
@@ -27,6 +27,7 @@ abstract contract ERC20Permit is ERC20, IERC20Permit, EIP712 {
     // solhint-disable-next-line var-name-mixedcase
     bytes32 internal constant _PERMIT_TYPEHASH =
         keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)");
+
     /**
      * @dev In previous versions `_PERMIT_TYPEHASH` was declared as `immutable`.
      * However, to ensure consistency with the upgradeable transpiler, we will continue
@@ -43,6 +44,10 @@ abstract contract ERC20Permit is ERC20, IERC20Permit, EIP712 {
      */
     constructor(string memory name) EIP712(name, "1") {}
 
+    function ERC20Permit_init(string memory _name) internal {
+        EIP712_init(_name, "1");
+    }
+    
     /**
      * @dev See {IERC20Permit-permit}.
      */
