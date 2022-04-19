@@ -6,7 +6,6 @@ import "./EnFi20.sol";
 
 contract EnFi4626 is EnFi20, IERC4626 {
 
-
     /// @notice The underlying token the vault accepts.
     ERC20 public immutable asset_;
 
@@ -50,7 +49,7 @@ contract EnFi4626 is EnFi20, IERC4626 {
         return convertToShares(assets);
     }
 
-    function _safeTransferFrom(ERC20 token_, address from_, address to_, uint256 amount_) private returns (uint256 result) {
+    function _safeTransferFrom(ERC20 token_, address from_, address to_, uint256 amount_) internal virtual returns (uint256 result) {
         uint256 initialBalance = token_.balanceOf(to_);
         token_.transferFrom(from_, to_, amount_);
         result = token_.balanceOf(to_) - initialBalance;
@@ -114,6 +113,7 @@ contract EnFi4626 is EnFi20, IERC4626 {
     function previewRedeem(uint256 shares) public virtual view returns (uint256 assets) {
         return convertToAssets(shares);
     }
+
     function redeem(uint256 shares, address receiver, address owner) public virtual returns (uint256 assets){
         require((assets = previewRedeem(shares)) != 0, "ZERO_ASSETS");
         _spendAllowance(owner, _msgSender(), shares);

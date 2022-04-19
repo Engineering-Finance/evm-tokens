@@ -2,7 +2,7 @@
 // based on OpenZeppelin Contracts (token/ERC20/extensions/draft-ERC20Permit.sol)
 
 pragma solidity ^0.8.0;
-import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/token/ERC20/ERC20.sol";
+import "./ERC20.sol";
 import "../interfaces/IEnFi20.sol";
 import "./ERC20Permit.sol";
 
