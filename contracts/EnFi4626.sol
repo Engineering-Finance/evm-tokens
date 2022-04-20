@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "OpenZeppelin/openzeppelin-contracts@4.5.0/contracts/security/ReentrancyGuard.sol";
 import "../interfaces/IERC4626.sol";
 import "./EnFi20.sol";
 
-contract EnFi4626 is ReentrancyGuard, EnFi20, IERC4626 {
+contract EnFi4626 is EnFi20, IERC4626 {
 
     /// @notice The underlying token the vault accepts.
     ERC20 public immutable asset_;
@@ -15,6 +14,7 @@ contract EnFi4626 is ReentrancyGuard, EnFi20, IERC4626 {
 
     bytes32 public immutable ROLE_addFunds = keccak256("ROLE_addFunds");
     bytes32 public immutable ROLE_removeFunds = keccak256("ROLE_removeFunds");
+    bool private recursion_;
 
     /// @notice Creates a new vault that accepts a specific underlying token.
     /// @param _asset The ERC20 compliant token the vault should accept.
@@ -59,7 +59,7 @@ contract EnFi4626 is ReentrancyGuard, EnFi20, IERC4626 {
         result = token_.balanceOf(to_) - initialBalance;
     }
 
-    function addFunds(uint256 _amount) public nonReentrant onlyRole(ROLE_addFunds) returns (uint256 amount_){
+    function addFunds(uint256 _amount) public onlyRole(ROLE_addFunds) returns (uint256 amount_){
         require(asset_.allowance(_msgSender(), address(this)) >= _amount, 'EnFi4626: Not enough allowance for contract to withdraw funds');
         amount_ = _safeTransferFrom(asset_, _msgSender(), address(this), _amount);
         if(amount_ > usedFunds) {
@@ -70,14 +70,13 @@ contract EnFi4626 is ReentrancyGuard, EnFi20, IERC4626 {
         }
     }
 
-    function removeFunds(uint256 _amount) public nonReentrant onlyRole(ROLE_removeFunds) {
-        usedFunds += _amount;
-        asset_.transfer(_msgSender(), _amount);
-    }
-
-    function removeFunds(uint256 _amount, address _receiver) public nonReentrant onlyRole(ROLE_removeFunds) {
+    function removeFunds(uint256 _amount, address _receiver) public onlyRole(ROLE_removeFunds) {
         usedFunds += _amount;
         asset_.transfer(_receiver, _amount);
+    }
+
+    function removeFunds(uint256 _amount) public onlyRole(ROLE_removeFunds) {
+        removeFunds(_amount);
     }
 
     function deposit(uint256 assets, address receiver) public virtual returns (uint256 shares){
