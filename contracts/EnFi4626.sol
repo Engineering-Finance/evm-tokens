@@ -120,7 +120,10 @@ contract EnFi4626 is EnFi20, IERC4626 {
 
     function withdraw(uint256 assets, address receiver, address owner) public virtual returns (uint256 shares){
         shares = previewWithdraw(assets);
-        _spendAllowance(owner, _msgSender(), shares);
+        if (_msgSender() != owner) {
+            _spendAllowance(owner, _msgSender(), shares);
+        }
+        require(asset_.balanceOf(address(this)) >= assets, "funds are not availables for withdrawal");
         // Determine the equivalent assets of shares and burn them.
         // This will revert if the user does not have enough shares.
         _burn(owner, shares);
@@ -140,9 +143,11 @@ contract EnFi4626 is EnFi20, IERC4626 {
 
     function redeem(uint256 shares, address receiver, address owner) public virtual returns (uint256 assets){
         require((assets = previewRedeem(shares)) != 0, "ZERO_ASSETS");
-        _spendAllowance(owner, _msgSender(), shares);
+        if (_msgSender() != owner) {
+            _spendAllowance(owner, _msgSender(), shares);
+        }
+        require(asset_.balanceOf(address(this)) >= assets, "funds are not availables for withdrawal");
         _burn(owner, shares);
-
         emit Withdraw(_msgSender(), receiver, owner, assets, shares);
         asset_.transfer(receiver, assets);
     }
