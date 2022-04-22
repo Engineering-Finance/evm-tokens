@@ -75,10 +75,6 @@ contract EnFi4626 is EnFi20, IERC4626 {
         asset_.transfer(_receiver, _amount);
     }
 
-    function removeFunds(uint256 _amount) public onlyRole(ROLE_removeFunds) {
-        removeFunds(_amount);
-    }
-
     function deposit(uint256 assets, address receiver) public virtual returns (uint256 shares){
         uint256 exchangeRate_ = assetsPerShare();
         uint256 receivedAssets = _safeTransferFrom(asset_, _msgSender(), address(this), assets);
