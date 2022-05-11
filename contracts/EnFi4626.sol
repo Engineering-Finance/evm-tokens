@@ -59,7 +59,7 @@ contract EnFi4626 is EnFi20, IERC4626 {
         result = token_.balanceOf(to_) - initialBalance;
     }
 
-    function addFunds(uint256 _amount) public onlyRole(ROLE_addFunds) returns (uint256 amount_){
+    function addFunds(uint256 _amount) public active virtual onlyRole(ROLE_addFunds) returns (uint256 amount_){
         require(asset_.allowance(_msgSender(), address(this)) >= _amount, 'EnFi4626: Not enough allowance for contract to withdraw funds');
         amount_ = _safeTransferFrom(asset_, _msgSender(), address(this), _amount);
         if(amount_ > usedFunds) {
@@ -70,12 +70,12 @@ contract EnFi4626 is EnFi20, IERC4626 {
         }
     }
 
-    function removeFunds(uint256 _amount, address _receiver) public onlyRole(ROLE_removeFunds) {
+    function removeFunds(uint256 _amount, address _receiver) public active virtual onlyRole(ROLE_removeFunds) {
         usedFunds += _amount;
         asset_.transfer(_receiver, _amount);
     }
 
-    function deposit(uint256 assets, address receiver) public virtual returns (uint256 shares){
+    function deposit(uint256 assets, address receiver) public active virtual returns (uint256 shares){
         uint256 exchangeRate_ = assetsPerShare();
         uint256 receivedAssets = _safeTransferFrom(asset_, _msgSender(), address(this), assets);
         shares = (receivedAssets * baseUnit) / exchangeRate_;
@@ -84,7 +84,7 @@ contract EnFi4626 is EnFi20, IERC4626 {
         emit Deposit(_msgSender(), receiver, assets, shares);
     }
 
-    function maxMint(address receiver) public virtual view returns (uint256 maxShares) {
+    function maxMint(address) public virtual view returns (uint256 maxShares) {
         maxShares = type(uint256).max;
     }
 
@@ -92,7 +92,7 @@ contract EnFi4626 is EnFi20, IERC4626 {
         assets = (shares * assetsPerShare()) / baseUnit;
     }
 
-    function mint(uint256 shares, address receiver) public virtual returns (uint256 assets){
+    function mint(uint256 shares, address receiver) public active virtual returns (uint256 assets){
         uint256 exchangeRate_ = assetsPerShare();
         assets = _safeTransferFrom(asset_, _msgSender(), address(this), previewMint(shares));
         uint256 shares_ = (assets * baseUnit) / exchangeRate_;
@@ -114,7 +114,7 @@ contract EnFi4626 is EnFi20, IERC4626 {
         return (assets * baseUnit ) / assetsPerShare();
     }
 
-    function withdraw(uint256 assets, address receiver, address owner) public virtual returns (uint256 shares){
+    function withdraw(uint256 assets, address receiver, address owner) public active virtual returns (uint256 shares){
         shares = previewWithdraw(assets);
         if (_msgSender() != owner) {
             _spendAllowance(owner, _msgSender(), shares);
@@ -137,7 +137,7 @@ contract EnFi4626 is EnFi20, IERC4626 {
         return convertToAssets(shares);
     }
 
-    function redeem(uint256 shares, address receiver, address owner) public virtual returns (uint256 assets){
+    function redeem(uint256 shares, address receiver, address owner) public active virtual returns (uint256 assets){
         require((assets = previewRedeem(shares)) != 0, "ZERO_ASSETS");
         if (_msgSender() != owner) {
             _spendAllowance(owner, _msgSender(), shares);
@@ -165,7 +165,7 @@ contract EnFi4626 is EnFi20, IERC4626 {
         assetsPerUnitShare = (totalAssets() * baseUnit) / shareSupply;
     }
 
-    function depositFrom(uint256 assets, address receiver) public virtual returns (uint256 shares) {
+    function depositFrom(uint256 assets, address receiver) public active virtual returns (uint256 shares) {
         uint256 exchangeRate_ = assetsPerShare();
         // Transfer in underlying tokens from the user.
         uint256 assets_ = _safeTransferFrom(asset_, tx.origin, address(this), assets);
